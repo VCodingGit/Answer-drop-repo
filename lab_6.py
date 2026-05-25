@@ -50,12 +50,11 @@ class Stack:
         else:
             return "No"
 
-'''
+
 sequence = [x for x in input().strip("")]
 stack = Stack()
 stack.push(sequence)
 print(stack.main())
-'''
 
 
 # Задание 2
@@ -71,27 +70,61 @@ class HashTable:
     def insert(self, key, value):
         if self.operations > 0:
             data = (key, value)
-            self.buckets[self._hash(data[0])].append(data)
-            self.operations -= 1
+            buck_adr = self._hash(key)
+            if not self.buckets[buck_adr]:
+                self.buckets[buck_adr].append(data)
+                self.operations -= 1
+                return
+            if self.buckets[buck_adr][0][0] == key:
+                self.buckets[buck_adr].append(data)
+                self.operations -= 1
+                return
+            else:
+                for i in range(0, len(self.buckets)):
+                    if not self.buckets[i]:
+                        self.buckets[i].append(data)
+                        self.operations -= 1
+                        return
+                    elif self.buckets[i][0][0] == key:
+                        self.buckets[i].append(data)
+                        self.operations -= 1
+                        return
+                else:
+                    self.buckets.append([data])
+                    self.size += 1
+                    self.operations -= 1
+                    return
 
-    def search(self, key):
-        pass
+    def search(self, key, default=0):
+        for i in range(0, self.size):
+            try:
+                if self.buckets[i][0][0] == key:
+                    return self.buckets[i][default][1]
+            except IndexError:
+                pass
+        return None
 
     def delete(self, key):
+        flag = False
         for i in range(len(self.buckets[self._hash(key)])):
             if self.buckets[self._hash(key)][i][0] == key:
                 self.buckets[self._hash(key)].pop()
-                break
+                return flag
+        else:
+            return False
 
     def display(self):
         print(self.buckets)
 
 
 table = HashTable()
-table.insert(1, 15)
-table.insert(12, 45)
-table.insert(13, 155)
-table.insert(11, 175)
-table.insert(12, 185)
-table.delete(12)
+while table.operations > 0:
+    x, y = [int(x) for x in input().split()]
+    table.insert(x, y)
+x = int(input())
+y = int(input())
+d = int(input())
+print(table.search(x))
+print(table.search(y, 1))
+print(table.delete(d))
 table.display()
